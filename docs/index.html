@@ -183,8 +183,9 @@
           <div class="field"><label>Дата</label><input id="date" type="date"></div>
           <div class="field"><label>Місто</label><input id="city" value="Дніпро"></div>
         </div>
-        <div class="form-row">
+        <div class="form-row row-2">
           <div class="field"><label>Строк виготовлення (робочих днів)</label><input id="prod_days" type="number" min="1" value="25" placeholder="25"></div>
+          <div class="field"><label>Транспортування (п. 2.7)</label><select id="transport_payer"><option value="zamovnyk">За рахунок замовника</option><option value="vykonavets">За рахунок виконавця</option></select></div>
         </div>
       </div>
 
@@ -318,7 +319,7 @@ function toDateUA(val) {
 
 function clearForm() {
   if (!confirm('Очистити всі поля?')) return;
-  ['num','city','client_name','client_phone','client_initial','client_addr','client_requisites','prod_days'].forEach(id=>{
+  ['num','city','client_name','client_phone','client_initial','client_addr','client_requisites','prod_days','transport_payer'].forEach(id=>{
     document.getElementById(id).value='';
   });
   document.getElementById('date').value = new Date().toISOString().split('T')[0];
@@ -335,6 +336,7 @@ function buildDoc() {
   const cAddr = v('client_addr') || '';
   const cRequisites = v('client_requisites') || '';
   const prodDays = v('prod_days') || '25';
+  const transportPayer = v('transport_payer') === 'vykonavets' ? 'за рахунок виконавця' : 'за рахунок замовника';
   const cInit = v('client_initial') || '_______________';
   const total = getTotal();
   const sup = currentSupplier;
@@ -347,7 +349,7 @@ function buildDoc() {
 <p>2.4. Остаточний розрахунок у розмірі 50% вартості сплачується перед відвантаженням товару, після отримання замовником фото та відео готовності. Остаточний розрахунок можливий накладеним платежем поштових перевізників Нова пошта та Делівері, в такому випадку транспортування товару сплачує замовник.</p>
 <p>2.5. Датою оплати вартості послуг є момент зарахування відповідної суми грошових коштів на рахунок Виконавця.</p>
 <p>2.6. Надання послуг згідно додаткам підтверджується видатковими накладними, які мають бути підписані представниками обох Сторін та скріплені підписами.</p>
-<p>2.7. Транспортування товару здійснюється за рахунок замовника до дверей дому або під'їзду, послуги розвантаження, підйому на поверх та збирання замовляються окремо від даного договору.</p>`;
+<p><strong>2.7. Транспортування товару здійснюється ${transportPayer} до дверей дому або під'їзду, послуги розвантаження, підйому на поверх та збирання замовляються окремо від даного договору.</strong></p>`;
 
   const section2_parts = `
 <div class="doc-section">2. ЦІНА ДОГОВОРУ ТА ПОРЯДОК РОЗРАХУНКІВ</div>
@@ -356,7 +358,7 @@ function buildDoc() {
 <p>2.3. Оплата за даним Договором здійснюється за допомогою сервісу «Оплата частинами» від Приватбанк або Монобанк.</p>
 <p>2.4. Датою оплати вартості послуг є момент зарахування відповідної суми грошових коштів на рахунок Виконавця. У випадку затримки платежу з вини банківської установи, Замовник звільняється від відповідальності за невиконання своїх зобов'язань за цим Договором.</p>
 <p>2.5. Надання послуг згідно додаткам підтверджується видатковими накладними, які мають бути підписані представниками обох Сторін та скріплені підписами.</p>
-<p>2.6. Транспортування товару здійснюється за рахунок виконавця до дверей дому або під'їзду, послуги розвантаження, підйому на поверх та збирання замовляються окремо від даного договору.</p>`;
+<p><strong>2.6. Транспортування товару здійснюється ${transportPayer} до дверей дому або під'їзду, послуги розвантаження, підйому на поверх та збирання замовляються окремо від даного договору.</strong></p>`;
 
   const section2 = (currentTemplate === 'parts') ? section2_parts : section2_50;
   let specRows = '';
