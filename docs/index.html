@@ -183,6 +183,9 @@
           <div class="field"><label>Дата</label><input id="date" type="date"></div>
           <div class="field"><label>Місто</label><input id="city" value="Дніпро"></div>
         </div>
+        <div class="form-row">
+          <div class="field"><label>Строк виготовлення (робочих днів)</label><input id="prod_days" type="number" min="1" value="25" placeholder="25"></div>
+        </div>
       </div>
 
       <!-- БЛОК 2: ЗАМОВНИК -->
@@ -197,6 +200,9 @@
         </div>
         <div class="form-row">
           <div class="field"><label>Адреса</label><input id="client_addr" placeholder="м. Суми, вул. Збройних Сил України, 35"></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>Реквізити замовника (ІПН, паспорт, банк тощо)</label><textarea id="client_requisites" placeholder="ІПН: 1234567890&#10;Паспорт: АА 123456&#10;Виданий: ..."></textarea></div>
         </div>
       </div>
 
@@ -312,7 +318,7 @@ function toDateUA(val) {
 
 function clearForm() {
   if (!confirm('Очистити всі поля?')) return;
-  ['num','city','client_name','client_phone','client_initial','client_addr'].forEach(id=>{
+  ['num','city','client_name','client_phone','client_initial','client_addr','client_requisites','prod_days'].forEach(id=>{
     document.getElementById(id).value='';
   });
   document.getElementById('date').value = new Date().toISOString().split('T')[0];
@@ -327,7 +333,9 @@ function buildDoc() {
   const cName = v('client_name') || '_______________';
   const cPhone = v('client_phone') || '';
   const cAddr = v('client_addr') || '';
-  const cInit = v('client_initial') || cName.split(' ').filter((_,i)=>i>0).map(w=>w[0]+'.').join('') ? cName.split(' ')[0]+' '+cName.split(' ').filter((_,i)=>i>0).map(w=>w[0]+'.').join('') : cName;
+  const cRequisites = v('client_requisites') || '';
+  const prodDays = v('prod_days') || '25';
+  const cInit = v('client_initial') || '_______________';
   const total = getTotal();
   const sup = currentSupplier;
 
@@ -382,7 +390,7 @@ ${sup.name}, ідентифікаційний код «${sup.code}», яка д�
 ${section2}
 
 <div class="doc-section">3. СТРОКИ ВИКОНАННЯ</div>
-<p>3.1. Строки виготовлення замовлення – 25 робочих днів.</p>
+<p>3.1. Строки виготовлення замовлення – ${prodDays} робочих днів.</p>
 <p>3.2. Датою початку виконання роботи вважається дата виконання умов п.2.1–2.6 Договору.</p>
 
 <div class="doc-section">4. ПРАВА ТА ОБОВ'ЯЗКИ СТОРІН</div>
@@ -415,6 +423,7 @@ ${section2}
     ${cName}<br>
     ${cPhone ? 'Тел.: ' + cPhone + '<br>' : ''}
     ${cAddr ? cAddr + '<br>' : ''}
+    ${cRequisites ? cRequisites.replace(/\n/g,'<br>') + '<br>' : ''}
     <br><br>
     ______________ ${cInit}
   </div>
